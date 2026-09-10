@@ -22,7 +22,8 @@ if "%PKG_NAME%"=="scipy" (
 
     REM need to rename project as well; for more details see
     REM https://scipy.github.io/devdocs/building/redistributable_binaries.html
-    sed -i "s:name = \"scipy\":name = \"scipy-tests\":g" pyproject.toml
+    %PYTHON% -c "from pathlib import Path; p=Path('pyproject.toml'); text=p.read_text(); old='name = '+chr(34)+'scipy'+chr(34); assert text.count(old)==1; p.write_text(text.replace(old, old.replace('scipy','scipy-tests')))"
+    if %ERRORLEVEL% neq 0 exit 1
 
     REM set compilers to clang-cl
     set "CC=clang-cl"
