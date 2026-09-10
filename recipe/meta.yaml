@@ -27,7 +27,7 @@ requirements:
     - python                                 # [build_platform != target_platform]
     - cross-python_{{ target_platform }}     # [build_platform != target_platform]
     - cython                                 # [build_platform != target_platform]
-    - numpy {{ numpy_build }}                      # [build_platform != target_platform]
+    - numpy {{ numpy_build }}                # [build_platform != target_platform]
     - pybind11                               # [build_platform != target_platform]
     - meson-python                           # [build_platform != target_platform]
     - cmake                                  # [build_platform != target_platform]
@@ -162,7 +162,7 @@ outputs:
             "ndimage/_ctest", "ndimage/_cytest", "special/_test_internal"
         ] %}
         {% set PY_ABI = "cpython-" ~ PY_VER.replace(".", "") %}                         # [unix]
-        {% set PY_ABI = "cp" ~ PY_VER.replace(".", "") ~ ("t" if is_freethreading else "") %}                               # [win]
+        {% set PY_ABI = "cp" ~ PY_VER.replace(".", "") ~ ("t" if is_freethreading|string|lower == "true" else "") %}                               # [win]
         {% set ARCH = "x86_64" if x86 else ("aarch64" if aarch64 else "powerpc64le")%}  # [linux]
         {% set WIN_ARCH = "arm64" if target_platform == "win-arm64" else "amd64" %}
         {% for each_lib in test_libraries %}
