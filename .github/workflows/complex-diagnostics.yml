@@ -32,8 +32,8 @@ jobs:
           call "%VSROOT%\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.arch }}
           if errorlevel 1 exit /b 1
           clang-cl --version
-          for %%o in (/Od /O2 /fp:strict) do (
-            clang-cl /nologo /EHsc /std:c++17 %%o /Iscipy-1.18.0\subprojects\xsf\include .github\diagnostics\sici.cpp /Fesici.exe
+          for %%o in (/fp:precise /fp:strict /clang:-ffp-contract=off /clang:-fsigned-zeros) do (
+            clang-cl /nologo /EHsc /std:c++17 /O2 %%o /Iscipy-1.18.0\subprojects\xsf\include .github\diagnostics\sici.cpp /Fesici.exe
             if errorlevel 1 exit /b 1
             echo FLAGS %%o
             sici.exe -10
