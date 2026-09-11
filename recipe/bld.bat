@@ -1,9 +1,6 @@
 @echo on
 setlocal enabledelayedexpansion
 
-REM Preserve signed zero in optimized ARM64 complex arithmetic.
-if "%target_platform%"=="win-arm64" set "CXXFLAGS=%CXXFLAGS% /clang:-ffp-contract=off"
-
 mkdir builddir
 
 :: check if clang-cl is on path as required

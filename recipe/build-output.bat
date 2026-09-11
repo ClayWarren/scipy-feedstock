@@ -1,9 +1,6 @@
 @echo on
 setlocal enabledelayedexpansion
 
-REM Preserve signed zero in optimized ARM64 complex arithmetic.
-if "%target_platform%"=="win-arm64" set "CXXFLAGS=%CXXFLAGS% /clang:-ffp-contract=off"
-
 REM delete tests from baseline output "scipy"
 if "%PKG_NAME%"=="scipy" (
     REM `pip install dist\numpy*.whl` does not work on windows,

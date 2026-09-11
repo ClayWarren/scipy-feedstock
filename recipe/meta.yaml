@@ -17,6 +17,8 @@ package:
 source:
   url: https://pypi.org/packages/source/s/scipy/scipy-{{ version }}.tar.gz
   sha256: 67b2ad2ad54c72ca6d04975a9b2df8c3638c34ddd5b28738e94fc2b57929d378
+  patches:
+    - patches/0001-preserve-sici-signed-zero.patch  # [target_platform == "win-arm64"]
 
 build:
   number: 1
