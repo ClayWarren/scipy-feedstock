@@ -25,6 +25,14 @@ jobs:
           if ((Get-FileHash scipy.tar.gz -Algorithm SHA256).Hash -ne '67b2ad2ad54c72ca6d04975a9b2df8c3638c34ddd5b28738e94fc2b57929d378') { throw 'Source hash mismatch' }
           tar -xzf scipy.tar.gz
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Apply exact complex rotation
+        shell: pwsh
+        run: |
+          $path = 'scipy-1.18.0/subprojects/xsf/include/xsf/sici.h'
+          $text = Get-Content -Raw $path
+          $old = 'std::complex<double> jz = std::complex<double>(0.0, 1.0) * z;'
+          if (-not $text.Contains($old)) { throw 'Missing expected source' }
+          $text.Replace($old, 'std::complex<double> jz(-z.imag(), z.real());') | Set-Content $path
       - name: Compare optimized and strict floating point
         shell: cmd
         run: |
