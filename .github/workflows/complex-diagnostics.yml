@@ -1,0 +1,41 @@
+name: Native complex integral diagnostics
+on:
+  push:
+    branches: [codex/windows-arm64-diagnostics]
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - runner: windows-11-arm
+            arch: arm64
+          - runner: windows-2022
+            arch: amd64
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - name: Fetch exact SciPy sources
+        shell: pwsh
+        run: |
+          curl.exe -fLsS https://pypi.org/packages/source/s/scipy/scipy-1.18.0.tar.gz -o scipy.tar.gz
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          if ((Get-FileHash scipy.tar.gz -Algorithm SHA256).Hash -ne '67b2ad2ad54c72ca6d04975a9b2df8c3638c34ddd5b28738e94fc2b57929d378') { throw 'Source hash mismatch' }
+          tar -xzf scipy.tar.gz
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Compare optimized and strict floating point
+        shell: cmd
+        run: |
+          for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -latest -products * -property installationPath`) do set "VSROOT=%%i"
+          call "%VSROOT%\VC\Auxiliary\Build\vcvarsall.bat" ${{ matrix.arch }}
+          if errorlevel 1 exit /b 1
+          clang-cl --version
+          for %%o in (/Od /O2 /fp:strict) do (
+            clang-cl /nologo /EHsc /std:c++17 %%o /Iscipy-1.18.0\subprojects\xsf\include .github\diagnostics\sici.cpp /Fesici.exe
+            if errorlevel 1 exit /b 1
+            echo FLAGS %%o
+            sici.exe -10
+            sici.exe 10
+          )
