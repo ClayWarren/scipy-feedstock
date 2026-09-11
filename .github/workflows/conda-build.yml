@@ -23,30 +23,6 @@ jobs:
       max-parallel: 50
       matrix:
         include:
-        - CONFIG: win_64_is_freethreadingfalsepython3.14.____cp314
-          STORE_BUILD_ARTIFACTS: true
-          UPLOAD_PACKAGES: false
-          build_platform: win-64
-          build_workspace_dir: D:\\bld\\
-          docker_run_args:
-          free_disk_space: skip
-          os: windows
-          pagefile_size: 0
-          resize_partitions: false
-          runs_on: [windows-2022]
-          tools_install_dir: D:\Miniforge
-        - CONFIG: win_64_is_freethreadingtruepython3.14.____cp314t
-          STORE_BUILD_ARTIFACTS: true
-          UPLOAD_PACKAGES: false
-          build_platform: win-64
-          build_workspace_dir: D:\\bld\\
-          docker_run_args:
-          free_disk_space: skip
-          os: windows
-          pagefile_size: 0
-          resize_partitions: false
-          runs_on: [windows-2022]
-          tools_install_dir: D:\Miniforge
         - CONFIG: win_arm64_is_freethreadingfalsepython3.14.____cp314
           STORE_BUILD_ARTIFACTS: true
           UPLOAD_PACKAGES: false
@@ -97,3 +73,13 @@ jobs:
         BINSTAR_TOKEN: ${{ secrets.BINSTAR_TOKEN }}
         FEEDSTOCK_TOKEN: ${{ secrets.FEEDSTOCK_TOKEN }}
         STAGING_BINSTAR_TOKEN: ${{ secrets.STAGING_BINSTAR_TOKEN }}
+
+    - name: Retain native SciPy packages
+      if: always()
+      uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
+      with:
+        name: scipy-${{ matrix.CONFIG }}
+        path: |
+          C:/bld/win-arm64/scipy*.conda
+          C:/bld/broken/scipy*.conda
+        if-no-files-found: warn
