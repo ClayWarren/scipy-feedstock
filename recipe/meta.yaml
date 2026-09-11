@@ -233,6 +233,8 @@ outputs:
         - mpmath
       commands:
         {% set tests_to_skip = "_not_a_real_test" %}
+        # Single-precision CGS convergence depends on platform rounding: scipy/scipy#25522.
+        {% set tests_to_skip = tests_to_skip + " or (test_convergence and rand-sym-pd-F-cgs)" %}  # [target_platform == "win-arm64"]
         # sign errors
         {% set tests_to_skip = tests_to_skip + " or (TestSystematic and test_spherical)" %}               # [aarch64]
         # on the slowest agents, these tests take more than 20min in emulation
